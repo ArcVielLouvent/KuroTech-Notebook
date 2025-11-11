@@ -32,7 +32,6 @@ router.post("/register", async (req, res) => {
   // hash password baru
   const hashed = await bcrypt.hash(password, 10);
 
-  // role otomatis admin jika username Arc, user lainnya user
   const role = username.toLowerCase() === "arc" ? "admin" : "user";
 
   users.push({ username, password: hashed, role });
