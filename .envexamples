@@ -1,0 +1,2 @@
+JWT_SECRET=YourSecretkey
+PORT=8000

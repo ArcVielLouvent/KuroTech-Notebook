@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notebook | KuroTech Notebook</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>KuroTech Notebook</h1>
+    <button onclick="logout()" class="btn logout-btn">Logout</button>
+  </header>
+  <main>
+    <section id="note-form">
+      <h2>New Note</h2>
+      <input type="text" id="note-title" placeholder="Title" required>
+      <textarea id="note-content" placeholder="Content" required></textarea>
+      <button id="addNoteBtn" class="btn">Add Note</button>
+    </section>
+    <section id="notes-container"></section>
+  </main>
+  <script src="notebook.js"></script>
+</body>
+</html>
