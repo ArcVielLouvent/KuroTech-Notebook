@@ -6,7 +6,6 @@ KuroTech Notebook adalah aplikasi catatan online berbasis Node.js, dengan fitur 
 - Login/Register pengguna
 - Membuat, mengedit, dan menghapus catatan
 - Catatan per pengguna
-- Frontend modern dengan tema gelap dan futuristik
 - Rate limiting untuk mencegah spam
 
 ## Instalasi Lokal
