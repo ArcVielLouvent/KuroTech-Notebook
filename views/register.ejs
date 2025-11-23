@@ -9,13 +9,15 @@
         <div class="card">
             <div class="logo" style="text-align: center; margin-bottom: 20px;">KUROTECH</div>
             <h3>New Agent Registration</h3>
+            
             <input type="text" id="username" placeholder="Codename">
             <input type="email" id="email" placeholder="Email">
             <input type="password" id="password" placeholder="Password">
             
             <button id="btnRegister">Register Identity</button>
-            
-             <p style="margin-top: 15px; font-size: 0.8rem;">
+            <p id="statusMsg" style="color: red; font-size: 0.8rem; margin-top: 10px;"></p>
+
+            <p style="margin-top: 15px; font-size: 0.8rem;">
                 <a href="/" style="color: var(--accent-secondary)">Back to Login</a>
             </p>
         </div>
@@ -25,14 +27,12 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "firebase/app";
         import { getAnalytics } from "firebase/analytics";
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
 
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        console.log("Script dimulai..."); // Cek console, tulisan ini harus muncul
+
+        // --- PASTE CONFIG DISINI ---
         const firebaseConfig = {
             apiKey: "AIzaSyDaYI9RbbXMJf2_GTK4SBwdxKWI94ptCUM",
             authDomain: "kurotech-notebook.firebaseapp.com",
@@ -42,47 +42,57 @@
             appId: "1:934631641138:web:43b0a8a5143d98ee9eac2b",
             measurementId: "G-7CC1LF7VHX"
         };
+        // ---------------------------
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        try {
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            console.log("Firebase berhasil di-load");
 
-        // Kita ambil elemen tombol berdasarkan ID-nya
-        const btn = document.getElementById('btnRegister');
+            const btn = document.getElementById('btnRegister');
+            const statusMsg = document.getElementById('statusMsg');
 
-        // Kita tambahkan 'pendengar' (listener) klik
-        if(btn) {
             btn.addEventListener('click', () => {
+                console.log("Klik tombol terdeteksi!");
                 const email = document.getElementById('email').value;
                 const pass = document.getElementById('password').value;
                 const username = document.getElementById('username').value;
 
-                console.log("Tombol Register Ditekan"); // Cek Console browser jika tidak jalan
-                btn.innerText = "PROCESSING..."; // Ubah teks tombol biar terlihat loading
+                if(!email || !pass) {
+                    alert("Email dan Password tidak boleh kosong!");
+                    return;
+                }
+
+                btn.innerText = "PROCESSING...";
+                statusMsg.innerText = "Connecting to server...";
 
                 createUserWithEmailAndPassword(auth, email, pass)
                     .then(async (userCredential) => {
                         const user = userCredential.user;
-                        // Simpan data user ke database
                         await setDoc(doc(db, "users", user.uid), {
                             username: username,
                             email: email,
                             role: "user",
                             joined: new Date().toISOString()
                         });
-                        alert("Identity verified. Redirecting...");
-                        window.location.href = "/dashboard";
+                        statusMsg.innerText = "Success! Redirecting...";
+                        statusMsg.style.color = "lime";
+                        setTimeout(() => {
+                            window.location.href = "/dashboard";
+                        }, 1000);
                     })
                     .catch((error) => {
-                        console.error("Error:", error);
-                        btn.innerText = "REGISTER IDENTITY"; // Balikin teks tombol
-                        alert("Registration Failed: " + error.message);
+                        console.error("Firebase Error:", error);
+                        btn.innerText = "REGISTER IDENTITY";
+                        statusMsg.innerText = error.message;
                     });
             });
-        } else {
-            console.error("Tombol Register tidak ditemukan!");
+
+        } catch (err) {
+            console.error("Script Crash:", err);
+            alert("Terjadi error sistem: " + err.message);
         }
     </script>
 </body>
