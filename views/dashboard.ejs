@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KuroTech - Research Deck</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav>
+        <div class="logo">KUROTECH</div>
+        <div>
+            <span id="user-display" style="margin-right: 20px; font-size: 0.9rem;">Loading Agent...</span>
+            <button class="logout-btn" onclick="logout()">Disconnect</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h3>New Data Entry</h3>
+            <input type="text" id="note-title" placeholder="Subject / Title">
+            <textarea id="note-content" rows="5" placeholder="Enter research data or code snippet..."></textarea>
+            <button onclick="addNote()">Save to Database</button>
+        </div>
+
+        <div id="notebook-container">
+            </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // --- PASTE CONFIG LAGI ---
+        const firebaseConfig = {
+             apiKey: "GANTI_DENGAN_API_KEY",
+            // ... sisanya
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        let currentUser = null;
+
+        // Cek User Login
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('user-display').innerText = "Agent: " + user.email;
+                loadNotes(user.uid);
+            } else {
+                window.location.href = "/";
+            }
+        });
+
+        window.logout = () => {
+            signOut(auth).then(() => window.location.href = "/");
+        }
+
+        window.addNote = async () => {
+            const title = document.getElementById('note-title').value;
+            const content = document.getElementById('note-content').value;
+            
+            if(title && content) {
+                await addDoc(collection(db, "notes"), {
+                    uid: currentUser.uid,
+                    title: title,
+                    content: content,
+                    createdAt: new Date()
+                });
+                // Reset form
+                document.getElementById('note-title').value = "";
+                document.getElementById('note-content').value = "";
+            }
+        }
+
+        function loadNotes(uid) {
+            const q = query(collection(db, "notes"), where("uid", "==", uid));
+            // Realtime listener
+            onSnapshot(q, (snapshot) => {
+                const container = document.getElementById('notebook-container');
+                container.innerHTML = ""; // Clear current list
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const div = document.createElement('div');
+                    div.className = "card";
+                    div.innerHTML = `
+                        <h3 style="color: var(--accent-secondary)">${data.title}</h3>
+                        <pre style="white-space: pre-wrap; font-family: 'Courier New';">${data.content}</pre>
+                    `;
+                    container.appendChild(div);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

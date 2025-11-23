@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KuroTech - Register</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container" style="max-width: 400px;">
+        <div class="card">
+            <div class="logo" style="text-align: center; margin-bottom: 20px;">KUROTECH</div>
+            <h3>New Agent Registration</h3>
+            <input type="text" id="username" placeholder="Codename">
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="register()">Register Identity</button>
+             <p style="margin-top: 15px; font-size: 0.8rem;">
+                <a href="/" style="color: var(--accent-secondary)">Back to Login</a>
+            </p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { initializeApp } from "firebase/app";
+        import { getAnalytics } from "firebase/analytics";
+        // --- PASTE CONFIG YANG SAMA SEPERTI DI LOGIN.EJS ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDaYI9RbbXMJf2_GTK4SBwdxKWI94ptCUM",
+            authDomain: "kurotech-notebook.firebaseapp.com",
+            projectId: "kurotech-notebook",
+            storageBucket: "kurotech-notebook.firebasestorage.app",
+            messagingSenderId: "934631641138",
+            appId: "1:934631641138:web:43b0a8a5143d98ee9eac2b",
+            measurementId: "G-7CC1LF7VHX"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.register = () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const username = document.getElementById('username').value;
+
+            createUserWithEmailAndPassword(auth, email, pass)
+                .then(async (userCredential) => {
+                    const user = userCredential.user;
+                    // Simpan data tambahan ke Firestore
+                    await setDoc(doc(db, "users", user.uid), {
+                        username: username,
+                        email: email,
+                        role: "user",
+                        joined: new Date().toISOString()
+                    });
+                    alert("Identity verified. Redirecting...");
+                    window.location.href = "/dashboard";
+                })
+                .catch((error) => {
+                    alert("Registration Error: " + error.message);
+                });
+        }
+    </script>
+</body>
+</html>

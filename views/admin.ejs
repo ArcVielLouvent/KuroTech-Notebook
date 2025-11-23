@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KuroTech - Admin Console</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav style="border-bottom: 1px solid red;">
+        <div class="logo" style="color: red;">KUROTECH [ADMIN]</div>
+        <button class="logout-btn" onclick="logout()">Terminate</button>
+    </nav>
+
+    <div class="container">
+        <div class="card" style="border-color: red;">
+            <h3 style="color: red;">User Database</h3>
+            <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #333;">
+                        <th>Email</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody id="user-list">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { initializeApp } from "firebase/app";
+        import { getAnalytics } from "firebase/analytics";
+
+        // --- PASTE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDaYI9RbbXMJf2_GTK4SBwdxKWI94ptCUM",
+            authDomain: "kurotech-notebook.firebaseapp.com",
+            projectId: "kurotech-notebook",
+            storageBucket: "kurotech-notebook.firebasestorage.app",
+            messagingSenderId: "934631641138",
+            appId: "1:934631641138:web:43b0a8a5143d98ee9eac2b",
+            measurementId: "G-7CC1LF7VHX"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            // Proteksi Sederhana: Ganti email ini dengan email kamu
+            if (user && user.email === "admin@kurotech.com") {
+                loadUsers();
+            } else {
+                alert("UNAUTHORIZED ACCESS DETECTED.");
+                window.location.href = "/";
+            }
+        });
+
+        window.logout = () => {
+            signOut(auth).then(() => window.location.href = "/");
+        }
+
+        async function loadUsers() {
+            const querySnapshot = await getDocs(collection(db, "users"));
+            const tbody = document.getElementById('user-list');
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding: 10px;">${data.email}</td>
+                    <td>${data.username}</td>
+                    <td>${data.role}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>

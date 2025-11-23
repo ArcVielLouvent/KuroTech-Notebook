@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KuroTech - Login</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container" style="max-width: 400px; margin-top: 100px;">
+        <div class="card">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div class="logo">KUROTECH</div>
+                <p>Secure Access Terminal</p>
+            </div>
+            <input type="email" id="email" placeholder="User ID (Email)">
+            <input type="password" id="password" placeholder="Access Key (Password)">
+            <button onclick="login()">Initialize Session</button>
+            <p style="margin-top: 15px; font-size: 0.8rem;">
+                No access? <a href="/register" style="color: var(--accent-secondary)">Create Credentials</a>
+            </p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { initializeApp } from "firebase/app";
+        import { getAnalytics } from "firebase/analytics";
+
+        // --- GANTI INI DENGAN CONFIG KAMU ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDaYI9RbbXMJf2_GTK4SBwdxKWI94ptCUM",
+            authDomain: "kurotech-notebook.firebaseapp.com",
+            projectId: "kurotech-notebook",
+            storageBucket: "kurotech-notebook.firebasestorage.app",
+            messagingSenderId: "934631641138",
+            appId: "1:934631641138:web:43b0a8a5143d98ee9eac2b",
+            measurementId: "G-7CC1LF7VHX"
+        };
+        // ------------------------------------
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+
+        window.login = () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+
+            signInWithEmailAndPassword(auth, email, pass)
+                .then((userCredential) => {
+                    // Cek apakah admin (hardcoded sederhana untuk contoh)
+                    if(email === "admin@kurotech.com") {
+                        window.location.href = "/admin";
+                    } else {
+                        window.location.href = "/dashboard";
+                    }
+                })
+                .catch((error) => {
+                    alert("Access Denied: " + error.message);
+                });
+        }
+    </script>
+</body>
+</html>
