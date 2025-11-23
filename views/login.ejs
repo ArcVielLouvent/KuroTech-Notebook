@@ -25,10 +25,14 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        // Import the functions you need from the SDKs you need
         import { initializeApp } from "firebase/app";
         import { getAnalytics } from "firebase/analytics";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
 
-        // --- MASUKKAN CONFIG FIREBASE KAMU DI SINI ---
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
         const firebaseConfig = {
             apiKey: "AIzaSyDaYI9RbbXMJf2_GTK4SBwdxKWI94ptCUM",
             authDomain: "kurotech-notebook.firebaseapp.com",
@@ -39,14 +43,11 @@
             measurementId: "G-7CC1LF7VHX"
         };
 
-        // ---------------------------------------------
-
-        // Mencegah error duplikasi dengan try-catch sederhana (opsional tapi aman)
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const auth = getAuth(app);
 
-        // Kita pasang "telinga" di tombol login
         const btn = document.getElementById('btnLogin');
         
         if(btn) {
@@ -54,12 +55,14 @@
                 const email = document.getElementById('email').value;
                 const pass = document.getElementById('password').value;
 
-                console.log("Tombol ditekan. Mencoba login..."); // Cek console nanti
+                console.log("Tombol Login Ditekan");
                 btn.innerText = "ACCESSING...";
-                
+                btn.disabled = true;
+
                 signInWithEmailAndPassword(auth, email, pass)
                     .then((userCredential) => {
-                        console.log("Login Berhasil!");
+                        console.log("Login Success");
+                        // Cek admin sederhana
                         if(email === "admin@kurotech.com") {
                             window.location.href = "/admin";
                         } else {
@@ -67,9 +70,10 @@
                         }
                     })
                     .catch((error) => {
-                        console.error("Login Gagal:", error);
+                        console.error(error);
                         btn.innerText = "INITIALIZE SESSION";
-                        alert("ERROR: " + error.message);
+                        btn.disabled = false;
+                        alert("ACCESS DENIED: " + error.message);
                     });
             });
         }

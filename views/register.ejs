@@ -25,9 +25,14 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        // Import the functions you need from the SDKs you need
         import { initializeApp } from "firebase/app";
         import { getAnalytics } from "firebase/analytics";
-        // --- CONFIG FIREBASE DI SINI ---
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
         const firebaseConfig = {
             apiKey: "AIzaSyDaYI9RbbXMJf2_GTK4SBwdxKWI94ptCUM",
             authDomain: "kurotech-notebook.firebaseapp.com",
@@ -37,42 +42,47 @@
             appId: "1:934631641138:web:43b0a8a5143d98ee9eac2b",
             measurementId: "G-7CC1LF7VHX"
         };
-        // -------------------------------
-        
+
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // Kita ambil elemen tombol berdasarkan ID-nya
         const btn = document.getElementById('btnRegister');
 
+        // Kita tambahkan 'pendengar' (listener) klik
         if(btn) {
             btn.addEventListener('click', () => {
                 const email = document.getElementById('email').value;
                 const pass = document.getElementById('password').value;
                 const username = document.getElementById('username').value;
 
-                console.log("Register ditekan...");
-                btn.innerText = "PROCESSING...";
+                console.log("Tombol Register Ditekan"); // Cek Console browser jika tidak jalan
+                btn.innerText = "PROCESSING..."; // Ubah teks tombol biar terlihat loading
 
                 createUserWithEmailAndPassword(auth, email, pass)
                     .then(async (userCredential) => {
                         const user = userCredential.user;
+                        // Simpan data user ke database
                         await setDoc(doc(db, "users", user.uid), {
                             username: username,
                             email: email,
                             role: "user",
                             joined: new Date().toISOString()
                         });
-                        alert("Identity verified.");
+                        alert("Identity verified. Redirecting...");
                         window.location.href = "/dashboard";
                     })
                     .catch((error) => {
-                        console.error(error);
-                        btn.innerText = "REGISTER IDENTITY";
-                        alert("Error: " + error.message);
+                        console.error("Error:", error);
+                        btn.innerText = "REGISTER IDENTITY"; // Balikin teks tombol
+                        alert("Registration Failed: " + error.message);
                     });
             });
+        } else {
+            console.error("Tombol Register tidak ditemukan!");
         }
     </script>
 </body>
