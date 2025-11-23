@@ -29,5 +29,5 @@ app.get('/admin', (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`KuroTech system online at http://localhost:${port}`);
+    console.log(`KuroTech system online at http://0.0.0.0:${port}`);
 });
