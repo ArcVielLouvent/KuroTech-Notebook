@@ -27,8 +27,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        import { initializeApp } from "firebase/app";
-        import { getAnalytics } from "firebase/analytics";
 
         console.log("Script dimulai..."); // Cek console, tulisan ini harus muncul
 
@@ -46,7 +44,6 @@
 
         try {
             const app = initializeApp(firebaseConfig);
-            const analytics = getAnalytics(app);
             const auth = getAuth(app);
             const db = getFirestore(app);
             console.log("Firebase berhasil di-load");
