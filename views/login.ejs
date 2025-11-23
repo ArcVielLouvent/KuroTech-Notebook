@@ -13,7 +13,9 @@
             </div>
             <input type="email" id="email" placeholder="User ID (Email)">
             <input type="password" id="password" placeholder="Access Key (Password)">
-            <button onclick="login()">Initialize Session</button>
+            
+            <button id="btnLogin">Initialize Session</button>
+            
             <p style="margin-top: 15px; font-size: 0.8rem;">
                 No access? <a href="/register" style="color: var(--accent-secondary)">Create Credentials</a>
             </p>
@@ -26,7 +28,7 @@
         import { initializeApp } from "firebase/app";
         import { getAnalytics } from "firebase/analytics";
 
-        // --- GANTI INI DENGAN CONFIG KAMU ---
+        // --- MASUKKAN CONFIG FIREBASE KAMU DI SINI ---
         const firebaseConfig = {
             apiKey: "AIzaSyDaYI9RbbXMJf2_GTK4SBwdxKWI94ptCUM",
             authDomain: "kurotech-notebook.firebaseapp.com",
@@ -36,28 +38,40 @@
             appId: "1:934631641138:web:43b0a8a5143d98ee9eac2b",
             measurementId: "G-7CC1LF7VHX"
         };
-        // ------------------------------------
 
+        // ---------------------------------------------
+
+        // Mencegah error duplikasi dengan try-catch sederhana (opsional tapi aman)
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const auth = getAuth(app);
 
-        window.login = () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
+        // Kita pasang "telinga" di tombol login
+        const btn = document.getElementById('btnLogin');
+        
+        if(btn) {
+            btn.addEventListener('click', () => {
+                const email = document.getElementById('email').value;
+                const pass = document.getElementById('password').value;
 
-            signInWithEmailAndPassword(auth, email, pass)
-                .then((userCredential) => {
-                    // Cek apakah admin (hardcoded sederhana untuk contoh)
-                    if(email === "admin@kurotech.com") {
-                        window.location.href = "/admin";
-                    } else {
-                        window.location.href = "/dashboard";
-                    }
-                })
-                .catch((error) => {
-                    alert("Access Denied: " + error.message);
-                });
+                console.log("Tombol ditekan. Mencoba login..."); // Cek console nanti
+                btn.innerText = "ACCESSING...";
+                
+                signInWithEmailAndPassword(auth, email, pass)
+                    .then((userCredential) => {
+                        console.log("Login Berhasil!");
+                        if(email === "admin@kurotech.com") {
+                            window.location.href = "/admin";
+                        } else {
+                            window.location.href = "/dashboard";
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Login Gagal:", error);
+                        btn.innerText = "INITIALIZE SESSION";
+                        alert("ERROR: " + error.message);
+                    });
+            });
         }
     </script>
 </body>
